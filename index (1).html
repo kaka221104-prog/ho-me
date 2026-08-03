@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あなたの「家」診断 ―― 基礎・柱・制震ダンパー・雨漏りチェック</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#1c1626;
+    --bg-panel:#2c2236;
+    --bg-panel-2:#372b42;
+    --hairline:#4a3c55;
+    --cream:#f6eee3;
+    --cream-dim:#cfc3d6;
+    --amber:#f2a65a;
+    --amber-soft:#f2a65a55;
+    --sage:#89a884;
+    --clay:#c97b63;
+    --shadow: 0 30px 60px -20px rgba(0,0,0,0.55);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, #3a2c46 0%, transparent 60%),
+      linear-gradient(180deg, var(--bg-deep), #171120 100%);
+    color:var(--cream);
+    font-family:"Zen Kaku Gothic New", "Hiragino Sans", sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .stage{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+  .card{
+    width:100%;
+    max-width:560px;
+    background:linear-gradient(180deg, var(--bg-panel), var(--bg-panel-2));
+    border:1px solid var(--hairline);
+    border-radius:28px;
+    box-shadow:var(--shadow);
+    padding:40px 34px 34px;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:-40%;left:-20%;
+    width:70%;height:140%;
+    background:radial-gradient(circle, var(--amber-soft), transparent 60%);
+    pointer-events:none;
+    opacity:.5;
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.22em;
+    color:var(--amber);
+    text-transform:uppercase;
+    font-weight:500;
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:"Shippori Mincho", serif;
+    font-weight:800;
+    font-size:26px;
+    line-height:1.5;
+    margin:0 0 14px;
+    color:var(--cream);
+  }
+  h2{
+    font-family:"Shippori Mincho", serif;
+    font-weight:700;
+    font-size:21px;
+    line-height:1.6;
+    margin:0 0 18px;
+  }
+  p{ line-height:1.9; color:var(--cream-dim); font-size:15px; margin:0 0 14px; }
+  .lede{ color:var(--cream); }
+
+  /* --- house illustration --- */
+  .house-wrap{ display:flex; justify-content:center; margin:6px 0 22px; }
+  svg#house{ width:220px; height:auto; overflow:visible; }
+  .zone{ transition: opacity .5s ease, filter .5s ease; }
+  .glow{ filter:drop-shadow(0 0 10px var(--amber-soft)); }
+  .pulse{ animation:pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse{
+    0%,100%{ opacity:1; }
+    50%{ opacity:.45; }
+  }
+  .crack{ stroke:var(--clay); stroke-width:1.4; fill:none; opacity:0; transition:opacity .6s ease; }
+  .drip{ opacity:0; transition:opacity .6s ease; }
+
+  /* --- buttons --- */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:100%;
+    padding:14px 18px;
+    border-radius:14px;
+    border:1px solid var(--hairline);
+    background:rgba(246,238,227,0.04);
+    color:var(--cream);
+    font-family:"Zen Kaku Gothic New", sans-serif;
+    font-size:15px;
+    cursor:pointer;
+    text-align:left;
+    transition: background .2s ease, border-color .2s ease, transform .15s ease;
+    margin-bottom:10px;
+  }
+  .btn:hover{ background:rgba(242,166,90,0.10); border-color:var(--amber); transform:translateY(-1px); }
+  .btn:active{ transform:translateY(0); }
+  .btn-primary{
+    background:linear-gradient(180deg, var(--amber), #de8f45);
+    color:#241a12;
+    font-weight:700;
+    border:none;
+    text-align:center;
+    box-shadow:0 10px 24px -8px rgba(242,166,90,.55);
+  }
+  .btn-primary:hover{ filter:brightness(1.04); transform:translateY(-1px); }
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--hairline);
+    color:var(--cream-dim);
+    text-align:center;
+  }
+
+  /* --- progress --- */
+  .progress{ display:flex; gap:6px; margin-bottom:22px; }
+  .pane{
+    flex:1; height:5px; border-radius:3px;
+    background:rgba(246,238,227,0.12);
+    overflow:hidden;
+  }
+  .pane i{ display:block; height:100%; width:0%; background:var(--amber); border-radius:3px; transition:width .35s ease; }
+  .qmeta{ font-size:12px; letter-spacing:.14em; color:var(--cream-dim); margin-bottom:8px; }
+
+  /* --- meters --- */
+  .meter-row{ margin-bottom:20px; }
+  .meter-top{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+  .meter-label{ font-weight:700; font-size:14.5px; color:var(--cream); }
+  .meter-tag{ font-size:12px; color:var(--cream-dim); }
+  .meter-track{ height:10px; border-radius:6px; background:rgba(246,238,227,.10); overflow:hidden; }
+  .meter-fill{ height:100%; border-radius:6px; transition:width 1s cubic-bezier(.2,.8,.2,1); }
+
+  .type-card{
+    margin-top:6px;
+    padding:20px 20px 18px;
+    border-radius:18px;
+    background:rgba(242,166,90,0.08);
+    border:1px solid var(--amber-soft);
+  }
+  .type-card .eyebrow{ margin-bottom:6px; }
+  .type-card h2{ margin-bottom:10px; }
+  .tip{
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px dashed var(--hairline);
+    font-size:14px;
+    color:var(--cream);
+  }
+  .tip b{ color:var(--amber); }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; animation:fade .45s ease; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .foot-note{
+    margin-top:22px;
+    font-size:12px;
+    color:var(--cream-dim);
+    text-align:center;
+    line-height:1.7;
+  }
+  .foot-note code{
+    background:rgba(246,238,227,.08);
+    padding:1px 6px;
+    border-radius:4px;
+    color:var(--amber);
+  }
+
+  @media (max-width:420px){
+    .card{ padding:30px 20px 26px; border-radius:22px; }
+    h1{ font-size:22px; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="card">
+
+    <!-- ============ INTRO ============ -->
+    <div class="screen active" id="screen-intro">
+      <p class="eyebrow">家の状態チェック・全12問</p>
+      <h1>あなたという「家」は、<br>今どんな状態でしょうか。</h1>
+
+      <div class="house-wrap">
+        <svg id="house" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- lightning rod -->
+          <line x1="100" y1="8" x2="100" y2="34" stroke="var(--amber)" stroke-width="2.4" stroke-linecap="round" class="zone" id="zone-rod"/>
+          <circle cx="100" cy="8" r="3.4" fill="var(--amber)" class="zone" id="zone-rod-tip"/>
+          <!-- roof -->
+          <path d="M30 78 L100 34 L170 78 Z" fill="#3a2e47" stroke="#59496a" stroke-width="2" class="zone" id="zone-roof"/>
+          <!-- walls -->
+          <rect x="42" y="78" width="116" height="82" fill="#3a2e47" stroke="#59496a" stroke-width="2" class="zone" id="zone-walls"/>
+          <!-- window (glow indicator) -->
+          <rect x="86" y="98" width="28" height="28" rx="3" fill="var(--amber)" opacity="0.85" class="zone" id="zone-window"/>
+          <!-- pillars -->
+          <rect x="52" y="80" width="8" height="78" fill="#6b5a7d" class="zone" id="zone-pillar-l"/>
+          <rect x="140" y="80" width="8" height="78" fill="#6b5a7d" class="zone" id="zone-pillar-r"/>
+          <!-- foundation -->
+          <rect x="34" y="160" width="132" height="14" rx="3" fill="#59496a" stroke="#7a6a8c" stroke-width="1.5" class="zone" id="zone-foundation"/>
+          <!-- crack overlays (hidden by default) -->
+          <path class="crack" id="crack-foundation" d="M50 160 L58 174 L66 162 L74 174"/>
+          <path class="crack" id="crack-pillar-l" d="M56 90 L52 110 L58 130"/>
+          <path class="crack" id="crack-pillar-r" d="M144 90 L148 110 L142 130"/>
+          <!-- rain drip for leak -->
+          <g class="drip" id="drip-leak">
+            <line x1="100" y1="80" x2="100" y2="96" stroke="var(--clay)" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="108" y1="86" x2="108" y2="100" stroke="var(--clay)" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
+          </g>
+        </svg>
+      </div>
+
+      <p class="lede">大切にされる人と、優しいのに舐められてしまう人の違いは、<b>基礎・柱・制震ダンパー・雨漏り</b>という4つの状態の違いです。</p>
+      <p>12個の質問に答えるだけで、あなたの家の今の状態と、どこから手をつければいいかが分かります。所要時間は約2分です。</p>
+
+      <button class="btn btn-primary" onclick="startQuiz()">診断をはじめる</button>
+    </div>
+
+    <!-- ============ QUESTION ============ -->
+    <div class="screen" id="screen-question">
+      <div class="progress" id="progress"></div>
+      <div class="qmeta" id="qmeta"></div>
+      <h2 id="qtext"></h2>
+      <div id="qoptions"></div>
+    </div>
+
+    <!-- ============ RESULT ============ -->
+    <div class="screen" id="screen-result">
+      <p class="eyebrow">診断結果</p>
+      <h1 id="result-title">あなたの家は、こんな状態です</h1>
+
+      <div class="house-wrap">
+        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:200px;">
+          <line x1="100" y1="8" x2="100" y2="34" stroke="var(--amber)" stroke-width="2.4" stroke-linecap="round" class="zone" id="r-zone-rod"/>
+          <circle cx="100" cy="8" r="3.4" fill="var(--amber)" class="zone" id="r-zone-rod-tip"/>
+          <path d="M30 78 L100 34 L170 78 Z" fill="#3a2e47" stroke="#59496a" stroke-width="2" class="zone" id="r-zone-roof"/>
+          <rect x="42" y="78" width="116" height="82" fill="#3a2e47" stroke="#59496a" stroke-width="2" class="zone" id="r-zone-walls"/>
+          <rect x="86" y="98" width="28" height="28" rx="3" fill="var(--amber)" opacity="0.85" class="zone" id="r-zone-window"/>
+          <rect x="52" y="80" width="8" height="78" fill="#6b5a7d" class="zone" id="r-zone-pillar-l"/>
+          <rect x="140" y="80" width="8" height="78" fill="#6b5a7d" class="zone" id="r-zone-pillar-r"/>
+          <rect x="34" y="160" width="132" height="14" rx="3" fill="#59496a" stroke="#7a6a8c" stroke-width="1.5" class="zone" id="r-zone-foundation"/>
+          <path class="crack" id="r-crack-foundation" d="M50 160 L58 174 L66 162 L74 174"/>
+          <path class="crack" id="r-crack-pillar-l" d="M56 90 L52 110 L58 130"/>
+          <path class="crack" id="r-crack-pillar-r" d="M144 90 L148 110 L142 130"/>
+          <g class="drip" id="r-drip-leak">
+            <line x1="100" y1="80" x2="100" y2="96" stroke="var(--clay)" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="108" y1="86" x2="108" y2="100" stroke="var(--clay)" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
+          </g>
+        </svg>
+      </div>
+
+      <div id="meters"></div>
+
+      <div class="type-card" id="type-card">
+        <p class="eyebrow" id="type-eyebrow">あなたの家タイプ</p>
+        <h2 id="type-name">――</h2>
+        <p id="type-desc"></p>
+        <div class="tip" id="type-tip"></div>
+      </div>
+
+      <div class="type-card" id="cta-card" style="margin-top:24px;">
+        <p class="eyebrow">本気で家を建て直したい方へ</p>
+        <h2 style="margin-bottom:10px;">個別相談会のご案内</h2>
+        <p style="margin-bottom:14px;">
+          毎月人数限定・審査制で、個別相談会を行っています。<br>
+          参加をご希望の方は、下のボタンから公式LINEを友だち追加し、トーク画面で「<b>サポート</b>」とだけ送ってください。参加方法をご案内します。
+        </p>
+        <button class="btn btn-primary" onclick="window.open('https://utage-system.com/line/open/EqkPI8c31oR3?mtid=6AOPp7NDiEsy','_blank')">
+          公式LINEを開いて「サポート」と送る
+        </button>
+      </div>
+
+      <button class="btn btn-ghost" style="margin-top:10px;" onclick="restartQuiz()">もう一度診断する</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const QUESTIONS = [
+  // foundation (自己価値感)
+  { cat:"foundation", text:"誰かに何かを頼まれると、断ったら自分の価値が下がる気がして、つい引き受けてしまう" },
+  { cat:"foundation", text:"何かを成し遂げた日でないと、今日の自分はここにいてはいけない気がすることがある" },
+  { cat:"foundation", text:"褒められたり感謝されたりしないと、自分の存在価値に自信が持てない" },
+  // pillar (自己像)
+  { cat:"pillar", text:"誰かに意見を求められると、まず相手が求めていそうな答えを探してしまう" },
+  { cat:"pillar", text:"「どこがいい？」と聞かれると、反射的に「どこでもいいよ」と言ってしまう" },
+  { cat:"pillar", text:"誰かに素っ気なくされると、その後もずっとそのことが気になってしまう" },
+  // rod (神経系の反応)
+  { cat:"rod", text:"頼まれごとのLINEが来ると、内容をよく読む前に「はい、大丈夫です」と打ちはじめている" },
+  { cat:"rod", text:"相手の機嫌が悪いと、反射的に「自分が何かしたかも」と思ってしまう" },
+  { cat:"rod", text:"急に誘われると、本当は気が進まなくても、反射的に「行きます」と言ってしまう" },
+  // leak (蓄積した我慢)
+  { cat:"leak", text:"小さな違和感を感じても、「これくらい」と自分に言い聞かせて流してしまうことが多い" },
+  { cat:"leak", text:"気づくと、今日あった嫌なことを誰にも話せないまま、一日が終わっていることが多い" },
+  { cat:"leak", text:"特に大きな出来事がなくても、ふとした瞬間にどっと疲れを感じることがある" },
+];
+
+const OPTIONS = [
+  { v:1, label:"あまり当てはまらない" },
+  { v:2, label:"少し当てはまる" },
+  { v:3, label:"わりと当てはまる" },
+  { v:4, label:"とても当てはまる" },
+];
+
+const CAT_META = {
+  foundation: { label:"基礎", tagGood:"安定している", tagMid:"小さなヒビあり", tagBad:"点検が必要", color:"foundation" },
+  pillar:     { label:"柱",   tagGood:"軸がぶれにくい", tagMid:"揺れやすい場面あり", tagBad:"軸が相手側にある", color:"pillar" },
+  rod:        { label:"制震ダンパー", tagGood:"一拍置けている", tagMid:"時々反射で返してしまう", tagBad:"ほぼ反射で反応している", color:"rod" },
+  leak:       { label:"雨漏り", tagGood:"小さいうちに気づけている", tagMid:"少し溜まりやすい", tagBad:"我慢がかなり蓄積している", color:"leak" },
+};
+
+const METER_COLORS = {
+  good:"#89a884", mid:"#f2a65a", bad:"#c97b63"
+};
+
+let current = 0;
+let answers = {};
+
+function startQuiz(){
+  show('screen-question');
+  renderQuestion();
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function renderProgress(){
+  const wrap = document.getElementById('progress');
+  wrap.innerHTML = '';
+  QUESTIONS.forEach((_, i)=>{
+    const pane = document.createElement('div');
+    pane.className = 'pane';
+    const bar = document.createElement('i');
+    bar.style.width = i < current ? '100%' : (i === current ? '40%' : '0%');
+    pane.appendChild(bar);
+    wrap.appendChild(pane);
+  });
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  renderProgress();
+  document.getElementById('qmeta').textContent = `質問 ${current+1} / ${QUESTIONS.length}　―　${CAT_META[q.cat].label}について`;
+  document.getElementById('qtext').textContent = q.text;
+  const optWrap = document.getElementById('qoptions');
+  optWrap.innerHTML = '';
+  OPTIONS.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = opt.label;
+    btn.onclick = ()=> answer(q.cat, opt.v);
+    optWrap.appendChild(btn);
+  });
+}
+
+function answer(cat, value){
+  if(!answers[cat]) answers[cat] = [];
+  answers[cat].push(value);
+  current++;
+  if(current < QUESTIONS.length){
+    renderQuestion();
+  } else {
+    computeResult();
+  }
+}
+
+function scoreOf(cat){
+  return answers[cat].reduce((a,b)=>a+b, 0); // 3〜12
+}
+
+function tierOf(score){
+  if(score <= 5) return 'good';
+  if(score <= 8) return 'mid';
+  return 'bad';
+}
+
+function computeResult(){
+  const scores = {};
+  Object.keys(CAT_META).forEach(cat=>{ scores[cat] = scoreOf(cat); });
+
+  renderMeters(scores);
+  renderHouseVisual('r-', scores);
+  renderTypeCard(scores);
+
+  show('screen-result');
+}
+
+function renderMeters(scores){
+  const wrap = document.getElementById('meters');
+  wrap.innerHTML = '';
+  Object.keys(CAT_META).forEach(cat=>{
+    const meta = CAT_META[cat];
+    const score = scores[cat];
+    const tier = tierOf(score);
+    const pct = Math.round(((score-3)/(12-3))*100);
+    const tagText = tier==='good'?meta.tagGood:(tier==='mid'?meta.tagMid:meta.tagBad);
+
+    const row = document.createElement('div');
+    row.className = 'meter-row';
+    row.innerHTML = `
+      <div class="meter-top">
+        <span class="meter-label">${meta.label}</span>
+        <span class="meter-tag">${tagText}</span>
+      </div>
+      <div class="meter-track"><div class="meter-fill" style="width:0%; background:${METER_COLORS[tier]}"></div></div>
+    `;
+    wrap.appendChild(row);
+    requestAnimationFrame(()=>{
+      setTimeout(()=>{
+        row.querySelector('.meter-fill').style.width = pct + '%';
+      }, 60);
+    });
+  });
+}
+
+function renderHouseVisual(prefix, scores){
+  const tFoundation = tierOf(scores.foundation);
+  const tPillar = tierOf(scores.pillar);
+  const tRod = tierOf(scores.rod);
+  const tLeak = tierOf(scores.leak);
+
+  // foundation crack
+  const crackF = document.getElementById(prefix+'crack-foundation');
+  crackF.style.opacity = tFoundation==='bad' ? '1' : (tFoundation==='mid' ? '0.5' : '0');
+
+  // pillar cracks
+  const crackPL = document.getElementById(prefix+'crack-pillar-l');
+  const crackPR = document.getElementById(prefix+'crack-pillar-r');
+  const pillarOpacity = tPillar==='bad' ? '1' : (tPillar==='mid' ? '0.5' : '0');
+  crackPL.style.opacity = pillarOpacity;
+  crackPR.style.opacity = pillarOpacity;
+
+  // rod glow / dim
+  const rod = document.getElementById(prefix+'zone-rod');
+  const rodTip = document.getElementById(prefix+'zone-rod-tip');
+  if(tRod === 'good'){
+    rod.classList.add('glow'); rodTip.classList.add('glow');
+    rod.style.opacity = 1; rodTip.style.opacity = 1;
+  } else if(tRod === 'mid'){
+    rod.classList.remove('glow'); rodTip.classList.remove('glow');
+    rod.style.opacity = 0.55; rodTip.style.opacity = 0.55;
+  } else {
+    rod.classList.remove('glow'); rodTip.classList.remove('glow');
+    rod.style.opacity = 0.2; rodTip.style.opacity = 0.2;
+  }
+
+  // leak drip
+  const drip = document.getElementById(prefix+'drip-leak');
+  drip.style.opacity = tLeak==='bad' ? '1' : (tLeak==='mid' ? '0.5' : '0');
+
+  // window warmth reflects overall average
+  const avg = (scores.foundation+scores.pillar+scores.rod+scores.leak)/4;
+  const win = document.getElementById(prefix+'zone-window');
+  const winOpacity = avg <= 6 ? 0.95 : (avg <= 9 ? 0.6 : 0.28);
+  win.style.opacity = winOpacity;
+}
+
+const TYPES = {
+  foundation: {
+    name:"証明がんばり屋の家",
+    desc:"役に立てた日だけ、自分がここにいていいと感じやすいタイプです。基礎の配合に、少しずつ「証明できてもできなくても、いていい」という鉄筋を通していくと、地震のような揺れにも強くなっていきます。",
+    tip:"今日の一言：頼まれごとを引き受ける前に、心の中で「これができてもできなくても、私がここにいていい理由は変わらない」とだけ置いてみてください。"
+  },
+  pillar: {
+    name:"軸あずけの家",
+    desc:"自分がどう感じるかより先に、相手の反応を見てから決めてしまいやすいタイプです。雷のような一撃を受けてもヒビが入らないよう、柱の軸を、相手側ではなく自分の中に、少しずつ立て直していきましょう。",
+    tip:"今日の一言：何か聞かれたら、答える前に心の中で「私はこう感じてるな」と、自分の感覚を先に確定させてみてください。"
+  },
+  rod: {
+    name:"即時反応の家",
+    desc:"考えるより先に、体が「大丈夫です」と反応してしまいやすいタイプです。制震ダンパー、つまり反応の前の一拍を、意識して働かせていきましょう。",
+    tip:"今日の一言：頼まれごとやお誘いが来たら、返信する前にスマホを一度置いて、深呼吸を1回してみてください。"
+  },
+  leak: {
+    name:"静かな消耗の家",
+    desc:"大きな出来事がなくても、小さな我慢がじわじわ積み重なりやすいタイプです。雨漏りは、小さなうちに気づいて言葉にするだけで、進行を止めることができます。",
+    tip:"今日の一言：寝る前に1つだけ、「今日のあれ、ちょっとしんどかったな」と心の中で認めてあげてください。"
+  }
+};
+
+function renderTypeCard(scores){
+  let worstCat = 'foundation';
+  let worstScore = -1;
+  ['foundation','pillar','rod','leak'].forEach(cat=>{
+    if(scores[cat] > worstScore){ worstScore = scores[cat]; worstCat = cat; }
+  });
+  const t = TYPES[worstCat];
+  document.getElementById('type-name').textContent = t.name;
+  document.getElementById('type-desc').textContent = t.desc;
+  document.getElementById('type-tip').innerHTML = `<b>${t.tip.split('：')[0]}：</b>${t.tip.split('：')[1]}`;
+
+  const avg = (scores.foundation+scores.pillar+scores.rod+scores.leak)/4;
+  const title = document.getElementById('result-title');
+  if(avg <= 5){
+    title.textContent = "あなたの家は、かなり安定しています";
+  } else if(avg <= 8){
+    title.textContent = "あなたの家は、小さなヒビが見つかりました";
+  } else {
+    title.textContent = "あなたの家は、点検のサインが出ています";
+  }
+}
+
+function restartQuiz(){
+  current = 0;
+  answers = {};
+  show('screen-intro');
+}
+</script>
+</body>
+</html>
